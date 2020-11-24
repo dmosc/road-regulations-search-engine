@@ -49,7 +49,8 @@ class Article:
             "number": self.number,
             "id": self.id,
             "content": self.content,
-            "wordCount": len(self.content.split())
+            "wordCount": len(self.content.split()),
+            "likes": 0
         }
         return article_dict
 
@@ -119,24 +120,6 @@ def get_keywords(text):
     for keyword in json_output["tokens"]:
         extracted_keywords.append(keyword["lemma"])
     return extracted_keywords
-
-
-def save_keywords_in_memory(keywords, article):
-    """Saves the keywords from an article in memory
-
-    Args:
-        keywords (JSON): contains keywords
-        article (Article): article object
-    """
-    for keyword in keywords:
-        frequency = article["content"].count(keyword)
-        if keyword not in keywords_in_memory:
-            keywords_in_memory[keyword] = []
-        keywords_in_memory[keyword].append({
-            "number": article["number"],
-            "id": article["id"],
-            "frequency": frequency
-        })
 
 
 def parse(document_to_parse):

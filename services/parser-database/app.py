@@ -52,5 +52,11 @@ def get_article_by_number_in_memory(id):
         return error
 
 
+@app.route('/articles/like/<id>', methods=['GET'])
+def add_like(id):
+    article = db['search-engine']['articles'].find_one_and_update({'id': id}, {'$inc': {'likes': 1}})
+    return json.loads(json_util.dumps({'likes': article['likes']}))
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8082)
