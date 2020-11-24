@@ -1,0 +1,16 @@
+{
+  "name": "major-tom",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/oscardavidrm/major-tom.git",
+  "author": "oscardavidrm <oscardavidrodriguezm@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "test": "cypress run",
+    "env:mount": "bash cypress/env-mount.sh",
+    "env:unmount": "bash cypress/env-unmount.sh"
+  },
+  "devDependencies": {
+    "cypress": "^5.0.0"
+  }
+}

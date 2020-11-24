@@ -12,7 +12,7 @@ def gcloud_syntax_extraction(text):
     Returns:
         the response given by the api call
     """
-    client = language.LanguageServiceClient()
+    client = language.LanguageServiceClient.from_service_account_file('credentials.json')
     # pylint: disable=no-member
     document = types.Document(
         content=text,
