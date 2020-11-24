@@ -3,11 +3,12 @@ services/databases"""
 import requests  # pylint: disable=import-error
 import logging
 import numpy as np  # pylint: disable=import-error
-
+import pymongo
 import constants
 import env
 
 logging.basicConfig(level=logging.INFO)
+db = pymongo.MongoClient('mongodb://localhost:27017/')
 
 articles_in_memory = {}
 keywords_in_memory = {}
@@ -75,17 +76,18 @@ def get_articles_by_tfidf_value(keywords_list):
         list: articles and value for such keyword(s)
     """
     matching_articles = {}
+    total_articles = db['search-engine']['articles'].count({})
     for keyword in keywords_list:
         articles_that_match_keyword = {}
-        if keyword in keywords_in_memory:
-            for article in keywords_in_memory[keyword]:
+        total_keywords = db['search-engine']['keywords'].count({})
+        if db['search-engine']['keywords'].count({'name': keyword}) > 0:
+            for article in db['search-engine']['keywords'].find_one({'name': keyword})['articles']:
                 # tfidf computation
-                word_count = articles_in_memory[str(article["number"])]["wordCount"]
-                term_density_in_article = article["frequency"]/word_count
-                document_frequency = len(articles_in_memory)/len(keywords_in_memory[keyword])
+                article_dict = db['search-engine']['articles'].find_one({'number': article["number"]})
+                term_density_in_article = article["frequency"]/article_dict['wordCount']
+                document_frequency = total_articles/total_keywords
                 inverse_doc_freq = np.log(document_frequency)
                 weight = term_density_in_article * inverse_doc_freq
-
                 articles_that_match_keyword[str(article["number"])] = {"weight": weight}
         matching_articles[keyword] = articles_that_match_keyword
     return matching_articles

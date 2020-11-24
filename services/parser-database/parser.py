@@ -4,6 +4,9 @@ regulation articles and store them in memory.
 import logging
 import hashlib
 import re
+import pymongo
+import requests
+import env
 
 import slate  # pylint: disable=import-error
 
@@ -11,6 +14,7 @@ import connector
 import retriever
 
 logging.basicConfig(level=logging.INFO)
+db = pymongo.MongoClient('mongodb://localhost:27017/')
 
 
 class Document:
@@ -65,7 +69,7 @@ def identify_articles(pdf_text):
     res = re.split(r'ART[ÍI]CULO *\d+ *\.?-?', pdf_text)
     while i < len(res):
         articles.append(Article(i, res[i].strip()))
-        logging.info("Article #" + str(i) + " recognized!")
+        # logging.info("Article #" + str(i) + " recognized!")
         i += 1
     return articles
 
@@ -99,6 +103,42 @@ def has_file_changed(past_hash, file_name):
         return True
 
 
+def get_keywords(text):
+    """Get keywords that relate to this article (from NLP service)
+    Args:
+        text (sting): text to extract keywords from
+    Returns:
+        [list]: list of extracted keywords
+    """
+    extracted_keywords = []
+    request = {'text': text}
+    nlp_output = requests.post('http://localhost:8081/', json=request)
+    json_output = nlp_output.json()
+    if 'error' in json_output:
+        raise Exception(json_output['error']['message'])
+    for keyword in json_output["tokens"]:
+        extracted_keywords.append(keyword["lemma"])
+    return extracted_keywords
+
+
+def save_keywords_in_memory(keywords, article):
+    """Saves the keywords from an article in memory
+
+    Args:
+        keywords (JSON): contains keywords
+        article (Article): article object
+    """
+    for keyword in keywords:
+        frequency = article["content"].count(keyword)
+        if keyword not in keywords_in_memory:
+            keywords_in_memory[keyword] = []
+        keywords_in_memory[keyword].append({
+            "number": article["number"],
+            "id": article["id"],
+            "frequency": frequency
+        })
+
+
 def parse(document_to_parse):
     """Parses all PDF documents that are in the DB"""
     file_name = document_to_parse["jurisdiction"] + '.pdf'
@@ -112,5 +152,27 @@ def parse(document_to_parse):
             articles = identify_articles(final_text)
 
             for article in articles:
-                dictionary = article.to_dict()
-                connector.store_article(dictionary)
+                article_dict = article.to_dict()
+                keywords = get_keywords(article_dict["content"])
+                db['search-engine']['articles'].insert_one(article_dict)
+                for keyword in keywords:
+                    frequency = article_dict["content"].count(keyword)
+                    if db['search-engine']['keywords'].count_documents({'name': keyword}) == 0:
+                        db['search-engine']['keywords'].insert({
+                            'name': keyword,
+                            'articles': [{
+                                "number": article_dict["number"],
+                                "id": article_dict["id"],
+                                "frequency": frequency
+                            }]
+                        })
+                    else:
+                        db['search-engine']['keywords'].find_one_and_update({'name': keyword}, {
+                            '$push': {
+                                'articles': {
+                                    "number": article_dict["number"],
+                                    "id": article_dict["id"],
+                                    "frequency": frequency
+                                }
+                            }
+                        })
