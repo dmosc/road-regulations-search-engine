@@ -1,13 +1,13 @@
 type Article {
-  id: ID!
-  number: Int!
-  content: String!
-  keywords: [String!]!
-  minutesToRead: Float!
-  likes: Int!
+    id: ID!
+    number: Int!
+    content: String!
+    keywords: [String!]!
+    minutesToRead: Float!
+    likes: Int!
 }
 
 type Like {
-  likes: Int!
-  id: ID!
+    likes: Int!
+    id: ID!
 }

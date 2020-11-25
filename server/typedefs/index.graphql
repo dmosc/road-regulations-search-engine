@@ -4,9 +4,9 @@
 scalar Date
 
 type Query {
-  articles(search: String!): [Article!]
+    articles(search: String!): [Article!]
 }
 
 type Mutation {
-  articleLike(id: ID!): Like
+    articleLike(id: ID!): Like
 }

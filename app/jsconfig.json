@@ -3,8 +3,12 @@
     "target": "es6",
     "baseUrl": "src",
     "paths": {
-      "components/*": ["./src/components"],
-      "constants/*": ["./src/constants"]
+      "components/*": [
+        "./src/components"
+      ],
+      "constants/*": [
+        "./src/constants"
+      ]
     }
   }
 }

@@ -1,7 +1,6 @@
 body {
-  margin: 0;
-  font-family:
-    -apple-system,
+    margin: 0;
+    font-family: -apple-system,
     BlinkMacSystemFont,
     '1Segoe UI',
     'Roboto',
@@ -12,13 +11,12 @@ body {
     'Droid Sans',
     'Helvetica Neue',
     sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family:
-    source-code-pro,
+    font-family: source-code-pro,
     Menlo,
     Monaco,
     Consolas,
