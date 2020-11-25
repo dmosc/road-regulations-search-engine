@@ -70,7 +70,7 @@ def identify_articles(pdf_text):
     res = re.split(r'ART[ÍI]CULO *\d+ *\.?-?', pdf_text)
     while i < len(res):
         articles.append(Article(i, res[i].strip()))
-        # logging.info("Article #" + str(i) + " recognized!")
+       # logging.info("Article #" + str(i) + " recognized!")
         i += 1
     return articles
 
@@ -83,7 +83,6 @@ def parse_all_documents():
         retriever.get_document(document["url"], file_name)
         logging.info('File downloaded')
         parse(document)
-
 
 def has_file_changed(past_hash, file_name):
     """Sees if the file is different.
@@ -133,7 +132,6 @@ def parse(document_to_parse):
             for page in doc:
                 final_text += page
             articles = identify_articles(final_text)
-
             for article in articles:
                 article_dict = article.to_dict()
                 keywords = get_keywords(article_dict["content"])

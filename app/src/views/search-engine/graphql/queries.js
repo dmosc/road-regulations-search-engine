@@ -7,8 +7,9 @@ const GET_ARTICLES = gql`
       number
       content
       minutesToRead
+      likes
     }
   }
 `
 
-export { GET_ARTICLES }
+export { GET_ARTICLES}

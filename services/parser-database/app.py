@@ -3,7 +3,7 @@ import logging
 import pymongo
 import json
 from copy import copy
-
+from pymongo import ReturnDocument
 from flask import Flask  # pylint: disable=import-error
 from flask import request  # pylint: disable=import-error
 from flask import jsonify  # pylint: disable=import-error
@@ -22,6 +22,8 @@ db = pymongo.MongoClient('mongodb://localhost:27017/')
 def trigger_parsing():
     try:
         parse_all_documents()
+        #print(db.local.prueba.find_one({"name":"Pamela"}))
+        #db.local.prueba.insert_one({"name":"Oscar"})
     except Exception as e:
         logging.error(e)
         return {"error": {"message": "Internal Parser Error"}}, 500
@@ -54,8 +56,8 @@ def get_article_by_number_in_memory(id):
 
 @app.route('/articles/like/<id>', methods=['GET'])
 def add_like(id):
-    article = db['search-engine']['articles'].find_one_and_update({'id': id}, {'$inc': {'likes': 1}})
-    return json.loads(json_util.dumps({'likes': article['likes']}))
+    article = db['search-engine']['articles'].find_one_and_update({'id': id}, {'$inc': {'likes': 1}}, return_document=ReturnDocument.AFTER)
+    return json.loads(json_util.dumps({'likes': article['likes'], 'id': article['id']}))
 
 
 if __name__ == '__main__':

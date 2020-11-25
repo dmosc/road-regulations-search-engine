@@ -4,4 +4,10 @@ type Article {
   content: String!
   keywords: [String!]!
   minutesToRead: Float!
+  likes: Int!
+}
+
+type Like {
+  likes: Int!
+  id: ID!
 }

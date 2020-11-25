@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useMutation } from '@apollo/client'
 import {
   Grid,
   Dialog,
@@ -15,10 +16,25 @@ import {
 } from '@material-ui/core'
 import styles from './styles'
 import { DEFAULT_ARTICLE_PREVIEW_SIZE } from 'utils/constants'
+import { LIKE_ARTICLE } from './graphql/mutations'
 
-const ArticlesList = ({ articles }) => {
+
+const ArticlesList = ({ articles, setArticles }) => {
   const [currentArticle, setCurrentArticle] = useState(undefined)
   const classes = styles()
+  const [addLike, { data, error }] = useMutation(LIKE_ARTICLE);
+
+  if (data) {
+    const {articleLike: payload} = data
+    console.log(payload)
+    const articlesToSet = [...articles]
+    for(let i= 0; i<articlesToSet.length;i++){
+      if(articlesToSet[i].id==payload.id){
+        articlesToSet[i].likes=payload.likes
+      }
+    }
+    setArticles(articlesToSet)
+  }
 
   return (
     <Grid container spacing={3}>
@@ -50,6 +66,13 @@ const ArticlesList = ({ articles }) => {
                   color='secondary'
                   label={`${article.minutesToRead.toFixed(2)} mins`}
                   className={classes.minutesToRead}
+                />
+                <Chip
+                  size='small'
+                  color='secondary'
+                  label={`${article.likes} Likes`}
+                  className={classes.minutesToRead}
+                  onClick={()=>{addLike({variables: {id: article.id}})}}
                 />
               </CardActions>
             </Card>

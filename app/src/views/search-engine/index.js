@@ -52,7 +52,7 @@ const SearchEngine = () => {
         label={`${articles.length} resultados`}
         className={classes.resultsChip}
       />
-      <ArticlesList articles={articles} />
+      <ArticlesList articles={articles} setArticles={setArticles} />
       {articles.length === 0 &&
         <Card className={classes.card}>
           <CardContent>

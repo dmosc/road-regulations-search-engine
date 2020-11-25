@@ -24,7 +24,7 @@ const articleQueries = {
 
     for (const payload of articlePayloads) {
       const { data: article, error } = payload
-
+      console.log(article)
       if (error) return new Error(JSON.stringify(error))
 
       article.keywords = []
